@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>reniec_eaddress</groupId>
-    <artifactId>integration_java_demo</artifactId>
+    <artifactId>eaddress_integration_java_example</artifactId>
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
 
@@ -55,7 +55,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.9.5</version>
+            <version>2.9.9</version>
         </dependency>
 
         <!--Logger-->
