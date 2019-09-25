@@ -1,7 +1,6 @@
 package pe.gob.reniec.pki.eaddress.integration.controllers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -12,7 +11,8 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class IndexController extends ParentController {
 
-    private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
+    @Value("${app.url}")
+    private String baseUrl;
 
     @GetMapping("/")
     public ModelAndView getIndex() {
@@ -21,5 +21,4 @@ public class IndexController extends ParentController {
         response.addObject("baseUrl", baseUrl);
         return response;
     }
-
 }

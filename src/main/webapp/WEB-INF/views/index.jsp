@@ -16,7 +16,7 @@
             <h1 class="text-center">Domicilio Electrónico - RENIEC</h1>
             <h4 class="text-center">JAVA Example Integration</h4>
 
-            <form action="${baseUrl}/home" method="POST">
+            <form action="home" method="POST">
                 <div class="form-group">
                     <label for="dni">DNI</label>
                     <input type="text" class="form-control" id="dni" name="dni" placeholder="DNI" required>
@@ -27,7 +27,7 @@
                 </div>
                 <div class="form-group">
                     <label for="tag">TAG</label>
-                    <input type="text" class="form-control" id="tag" name="tag" placeholder="TAG" required>
+                    <input type="text" class="form-control" id="tag" name="tag" placeholder="TAG">
                 </div>
                 <div class="form-group form-check">
                     <label for="tag">MENSAJE</label>

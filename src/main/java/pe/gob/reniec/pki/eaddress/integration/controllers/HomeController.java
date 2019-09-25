@@ -1,11 +1,15 @@
 package pe.gob.reniec.pki.eaddress.integration.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import pe.gob.reniec.eaddress.sdk.ReniecEAddressClient;
+import pe.gob.reniec.eaddress.sdk.common.Constants;
 import pe.gob.reniec.eaddress.sdk.dto.ApiResponse;
 import pe.gob.reniec.eaddress.sdk.dto.Attachment;
 import pe.gob.reniec.eaddress.sdk.dto.ConfigAga;
@@ -22,6 +26,21 @@ import java.util.List;
 @Controller
 public class HomeController extends ParentController {
 
+    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+
+    @Value("${aga.uri}")
+    private String agaUri;
+    @Value("${aga.timestamp}")
+    private String agaTimestamp;
+    @Value("${aga.certificate.id}")
+    private String agaCertificateId;
+    @Value("${aga.password}")
+    private String agaPassword;
+    @Value("${app.url}")
+    private String baseUrl;
+
+    private ReniecEAddressClient reniecEAddressClient;
+
     @RequestMapping("/home")
     public ModelAndView getIndex(
             @RequestParam("dni") String dni,
@@ -31,51 +50,35 @@ public class HomeController extends ParentController {
     ) {
         ModelAndView response = new ModelAndView("home");
 
-        List<Attachment> attachments = new ArrayList<>();
-        Attachment attachment1 = new Attachment();
-        attachment1.setName("Archivo demo 1");
-        attachment1.setUrl("http://www.reniec.gob.pe/portal/pdf/01_dnie.pdf");
-
-        Attachment attachment2 = new Attachment();
-        attachment2.setName("Archivo demo 2");
-        attachment2.setUrl("http://www.reniec.gob.pe/Transparencia/intranet/imagenes/noticias/comunicado/POINF-RJ-000104-2017-JNAC-RENIEC.pdf");
-
-        attachments.add(attachment1);
-        attachments.add(attachment2);
-
-        String jsonAttachments = null;
-
         try {
+            logger.info("Sending notification to eAddress service test: ");
+
+            reniecEAddressClient = getEAddressClient();
+
+            List<Attachment> attachments = new ArrayList<>();
+            attachments.add(new Attachment("Archivo demo 1", "https://www.gob.pe/859-plataforma-de-autenticacion-id-peru"));
+            attachments.add(new Attachment("Archivo demo 2", "https://www.gob.pe/859-plataforma-de-autenticacion-id-peru"));
+            attachments.add(new Attachment("Archivo demo 3", "https://www.gob.pe/859-plataforma-de-autenticacion-id-peru"));
+
             ObjectMapper objectMapper = new ObjectMapper();
-            jsonAttachments = objectMapper.writeValueAsString(attachments);
+            String jsonAttachments = objectMapper.writeValueAsString(attachments);
 
             Message oMessage = new Message();
-            oMessage.setDocType("dni");
+            oMessage.setDocType(Constants.TYPE_DOC_DNI);
             oMessage.setDoc(dni);
             oMessage.setSubject(subject);
             oMessage.setMessage(message);
-            oMessage.setRep("");
             oMessage.setTag(tag);
             oMessage.setAttachments(jsonAttachments);
 
-            ConfigAga oConfigAga = new ConfigAga();
-            oConfigAga.setAgaUri("http://127.0.0.1:8080/refirma-aga/rest/service/sign-file");
-            oConfigAga.setTimestamp("false");
-            oConfigAga.setCertificateId("certificate");
-            oConfigAga.setSecretPassword("holamundo");
+            ApiResponse result = reniecEAddressClient.sendSingleNotification(oMessage);
 
-            ReniecEAddressClient demo = getEAddressClient(getClass().getClassLoader().getResource("reniec_eaddress.json").getFile(), oConfigAga);
-            ApiResponse result = demo.messageSingle(oMessage);
-
-            String resultMessage = result.getMessage();
-
-            if (result.getSuccess()) {
-                resultMessage = "Mensaje enviado.";
-            }
-
-            response.addObject("response", resultMessage);
+            response.addObject("response", result.getMessage());
             response.addObject("baseUrl", baseUrl);
 
+            if (!result.getSuccess()) {
+                logger.error("Error sending notication to eAddress: ".concat(result.toString()));
+            }
         } catch (Exception ex) {
             StringWriter sw = new StringWriter();
             ex.printStackTrace(new PrintWriter(sw));
