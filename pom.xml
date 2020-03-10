@@ -100,7 +100,7 @@
         <dependency>
             <groupId>com.github.pkiep-reniec</groupId>
             <artifactId>eaddress_sdk_java</artifactId>
-            <version>1.0.10</version>
+            <version>1.0.12</version>
         </dependency>
     </dependencies>
 
