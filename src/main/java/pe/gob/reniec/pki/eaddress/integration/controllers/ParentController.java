@@ -8,6 +8,7 @@ import pe.gob.reniec.eaddress.sdk.dto.ConfigAga;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Objects;
 
 /**
  * @author AlexAnder LLacho
@@ -35,7 +36,7 @@ public class ParentController {
             oConfigAga.setCertificateId(agaCertificateId);
             oConfigAga.setSecretPassword(agaPassword);
 
-            String configFile = getClass().getClassLoader().getResource("reniec_eaddress.json").getFile();
+            String configFile = Objects.requireNonNull(getClass().getClassLoader().getResource("reniec_eaddress.json")).getFile();
             reniecEAddressClient = new ReniecEAddressClient(configFile, oConfigAga);
 
             return reniecEAddressClient;

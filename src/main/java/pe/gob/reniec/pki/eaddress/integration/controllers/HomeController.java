@@ -28,18 +28,8 @@ public class HomeController extends ParentController {
 
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
-    @Value("${aga.uri}")
-    private String agaUri;
-    @Value("${aga.timestamp}")
-    private String agaTimestamp;
-    @Value("${aga.certificate.id}")
-    private String agaCertificateId;
-    @Value("${aga.password}")
-    private String agaPassword;
     @Value("${app.url}")
     private String baseUrl;
-
-    private ReniecEAddressClient reniecEAddressClient;
 
     @RequestMapping("/home")
     public ModelAndView getIndex(
@@ -53,7 +43,7 @@ public class HomeController extends ParentController {
         try {
             logger.info("Sending notification to eAddress service test: ");
 
-            reniecEAddressClient = getEAddressClient();
+            ReniecEAddressClient reniecEAddressClient = getEAddressClient();
 
             List<Attachment> attachments = new ArrayList<>();
             attachments.add(new Attachment("Archivo demo 1", "https://www.gob.pe/859-plataforma-de-autenticacion-id-peru"));
@@ -66,9 +56,9 @@ public class HomeController extends ParentController {
             Message oMessage = new Message();
             oMessage.setDocType(Constants.TYPE_DOC_DNI);
             oMessage.setDoc(dni);
-            oMessage.setSubject(subject);
-            oMessage.setMessage(message);
-            oMessage.setTag(tag);
+            oMessage.setSubject(subject.trim());
+            oMessage.setMessage(message.trim());
+            oMessage.setTag(tag.trim());
             oMessage.setAttachments(jsonAttachments);
 
             ApiResponse result = reniecEAddressClient.sendSingleNotification(oMessage);
